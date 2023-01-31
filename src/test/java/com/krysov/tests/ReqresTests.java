@@ -12,6 +12,8 @@ import io.qameta.allure.restassured.AllureRestAssured;
 import org.junit.jupiter.api.Test;
 
 import static com.krysov.helpers.CustomApiListener.withCustomTemplates;
+import static com.krysov.specs.CreateSpecs.CreateResponseSpec;
+import static com.krysov.specs.CreateSpecs.createRequestSpec;
 import static com.krysov.specs.LoginSpecs.loginRequestSpec;
 import static com.krysov.specs.LoginSpecs.loginResponseSpec;
 import static io.restassured.RestAssured.given;
@@ -198,19 +200,12 @@ public class ReqresTests {
         data.setName("morpheus");
         data.setJob("leader");
 
-        CreateResponseLombokModel response = given()
-                .log().uri()
-                .log().headers()
-                .log().body()
-                .filter(withCustomTemplates())
-                .contentType(JSON)
+        CreateResponseLombokModel response = given(createRequestSpec)
                 .body(data)
                 .when()
-                .post("https://reqres.in/api/users")
+                .post("/users")
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
+                .spec(CreateResponseSpec)
                 .extract().as(CreateResponseLombokModel.class);
 
         assertThat(response.getName()).isEqualTo("morpheus");
